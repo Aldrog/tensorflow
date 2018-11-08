@@ -340,6 +340,19 @@ cc_test(
     ],
 )
 
+cc_binary(
+name = "libtensorflow-lite.so",
+
+linkopts=["-shared", "-Wl"],
+linkshared=1,
+
+copts = tflite_copts(),
+deps = [
+    ":framework",
+    "//tensorflow/contrib/lite/kernels:builtin_ops",
+],
+)
+
 # Test the serialization of a model with optional tensors.
 
 # Model tests
