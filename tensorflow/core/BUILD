@@ -131,7 +131,6 @@ load(
     "tf_kernel_tests_linkstatic",
     "tf_lib_proto_compiler_deps",
     "tf_lib_proto_parsing_deps",
-    "tf_nano_proto_library",
     "tf_platform_hdrs",
     "tf_platform_srcs",
     "tf_proto_library",
@@ -248,15 +247,6 @@ tf_proto_library(
 
 tf_jspb_proto_library(
     name = "protos_all_jspb_proto",
-    visibility = ["//visibility:public"],
-    deps = [":protos_all_cc"],
-)
-
-tf_nano_proto_library(
-    name = "protos_all_nano_proto",
-    field_style = "accessors",
-    generate_equals = 1,
-    generate_intdefs = 1,
     visibility = ["//visibility:public"],
     deps = [":protos_all_cc"],
 )
@@ -393,6 +383,7 @@ cc_library(
         ":lib_platform",
         ":platform_base",
         "//tensorflow/core/platform/default/build_config:port",
+        "@com_google_absl//absl/base",
         "@snappy",
     ],
 )
@@ -2178,6 +2169,7 @@ cc_library(
             "lib/**/*.cc",
             "platform/*.cc",
             "platform/profile_utils/**/*.cc",
+        ] + [
             "framework/resource_handle.cc",
             "util/env_var.cc",
         ],
@@ -2821,7 +2813,6 @@ tf_cuda_library(
         ":functional_ops_op_lib",
         "//tensorflow/core/kernels:bounds_check",
         "//tensorflow/core/kernels:required",
-        ":core_cpu_impl",
     ]),
     alwayslink = 1,
 )
@@ -3058,7 +3049,9 @@ tf_cuda_library(
     ],
     copts = tf_copts(),
     cuda_deps = if_cuda_is_configured(tf_additional_cupti_wrapper_deps() + tf_additional_device_tracer_cuda_deps()),
-    visibility = ["//visibility:private"],
+    visibility = [
+        "//tensorflow:internal",
+    ],
     deps = [
         ":core_cpu_internal",
         ":lib",
@@ -4379,6 +4372,7 @@ tf_cc_test(
         "//tensorflow/core/kernels:cwise_op",
         "//tensorflow/core/kernels:function_ops",
         "//tensorflow/core/kernels:matmul_op",
+        "//tensorflow/core/kernels:partitioned_function_ops",
         "//tensorflow/core/kernels:random_ops",
         "//tensorflow/core/kernels:shape_ops",
         "//third_party/eigen3",

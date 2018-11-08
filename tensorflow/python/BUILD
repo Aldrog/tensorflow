@@ -7,10 +7,11 @@
 visibility = [
     "//engedu/ml/tf_from_scratch:__pkg__",
     "//tensorflow:internal",
-    "//tensorflow/contrib/lite/toco/python:__pkg__",
+    "//tensorflow/lite/toco/python:__pkg__",
     "//tensorflow_models:__subpackages__",
+    "//tensorflow_model_optimization:__subpackages__",
     # TODO(aselle): to pass open source test.
-    "//bazel_pip/tensorflow/contrib/lite/toco/python:__pkg__",
+    "//bazel_pip/tensorflow/lite/toco/python:__pkg__",
 ]
 
 package(default_visibility = visibility)
@@ -18,6 +19,8 @@ package(default_visibility = visibility)
 licenses(["notice"])  # Apache 2.0
 
 exports_files(["LICENSE"])
+
+exports_files(["platform/base.i"])
 
 load("//tensorflow:tensorflow.bzl", "if_not_windows")
 load("//tensorflow:tensorflow.bzl", "tf_cuda_library")
@@ -58,7 +61,7 @@ py_library(
         "//tensorflow/compiler/aot/tests:__pkg__",  # TODO(b/34059704): remove when fixed
         "//tensorflow/contrib/learn:__pkg__",  # TODO(b/34059704): remove when fixed
         "//tensorflow/contrib/learn/python/learn/datasets:__pkg__",  # TODO(b/34059704): remove when fixed
-        "//tensorflow/contrib/lite/toco/python:__pkg__",  # TODO(b/34059704): remove when fixed
+        "//tensorflow/lite/toco/python:__pkg__",  # TODO(b/34059704): remove when fixed
         "//tensorflow/python/debug:__pkg__",  # TODO(b/34059704): remove when fixed
         "//tensorflow/python/tools:__pkg__",  # TODO(b/34059704): remove when fixed
         "//tensorflow/tools/quantization:__pkg__",  # TODO(b/34059704): remove when fixed
@@ -76,6 +79,7 @@ py_library(
     srcs_version = "PY2AND3",
     visibility = [
         "//tensorflow:__pkg__",
+        "//tensorflow/python/estimator:__subpackages__",
         "//tensorflow/python/tools:__pkg__",
         "//tensorflow/python/tools/api/generator:__pkg__",
         "//tensorflow/tools/api/tests:__pkg__",
@@ -136,6 +140,7 @@ py_library(
         ":weights_broadcast_ops",
         ":while_v2",
         "//tensorflow/core:protos_all_py",
+        "//tensorflow/lite/python:lite",
         "//tensorflow/python/compat",
         "//tensorflow/python/data",
         "//tensorflow/python/distribute:estimator_training",
@@ -2998,18 +3003,6 @@ py_library(
 )
 
 py_library(
-    name = "summary_ops",
-    srcs = ["ops/summary_ops.py"],
-    srcs_version = "PY2AND3",
-    deps = [
-        ":framework",
-        ":framework_for_generated_wrappers",
-        ":logging_ops_gen",
-        ":summary_op_util",
-    ],
-)
-
-py_library(
     name = "summary_ops_v2",
     srcs = ["ops/summary_ops_v2.py"],
     srcs_version = "PY2AND3",
@@ -5009,7 +5002,6 @@ py_library(
     deps = [
         ":client",
         ":constant_op",
-        ":errors",
         ":framework",
         ":framework_for_generated_wrappers",
         ":lib",
@@ -5018,12 +5010,10 @@ py_library(
         ":protos_all_py",
         ":pywrap_tensorflow",
         ":summary_op_util",
-        ":summary_ops",
         ":summary_ops_gen",
         ":summary_ops_v2",
         ":util",
         "//tensorflow/python/eager:context",
-        "//third_party/py/numpy",
         "@six_archive//:six",
     ],
 )
@@ -5034,7 +5024,6 @@ py_tests(
     srcs = [
         "summary/plugin_asset_test.py",
         "summary/summary_test.py",
-        "summary/text_summary_test.py",
         "summary/writer/writer_test.py",
     ],
     additional_deps = [

@@ -108,15 +108,16 @@ class XlaDevice : public LocalDevice {
     // The name of the compilation device (e.g., "XLA_CPU_JIT");
     string compilation_device_name;
 
-    // 'transfer_as_literal' is true if device<->host transfers must be done
-    // using XLA's TransferLiteral{To,From}Device interface. If false, we can
-    // use ThenMemcpy instead.
-    bool transfer_as_literal = false;
-
     // If 'use_multiple_streams' is true, we create separate streams for
     // compute, host-to-device, and device-to-host communication.
     bool use_multiple_streams = false;
 
+    // A function that describes how the on-host shapes of
+    // a) argument and return value, for entry computations
+    // b) variables, for all computations,
+    // should be represented in XLA. Parameters/return values will be shaped
+    // according to this function, and reshaped back to/from their declared
+    // shapes for computations. Must be non-null.
     XlaCompiler::ShapeRepresentationFn shape_representation_fn;
 
     // If padded_shape_fn is empty, a default implementation that returns
@@ -209,9 +210,6 @@ class XlaDevice : public LocalDevice {
   std::vector<std::shared_ptr<se::Stream>> device_to_device_streams_
       GUARDED_BY(mu_);
 
-  // Must we use XLA's transfer manager for correct host<->device transfers? if
-  // false, we can use ThenMemcpy() instead.
-  const bool transfer_as_literal_;
   const XlaCompiler::ShapeRepresentationFn shape_representation_fn_;
 
   // The device context accessed by all users of the XlaDevice, set by calls to
