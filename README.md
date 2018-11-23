@@ -4,6 +4,12 @@
 
 -----------------
 
+To build for ARM64 Android run
+```
+bazel build -c opt //tensorflow/lite:libtensorflow-lite.so --crosstool_top=@androidndk//:toolchain-libcpp --cpu=arm64-v8a --host_crosstool_top=@bazel_tools//tools/cpp:toolchain --fat_apk_cpu=arm64-v8a --verbose_failures
+```
+Also, the last time I tried it, bazel has had a bug causing it to add `-lpthread` flag to the final link command. Clang linker doesn't understand this flag so you'll have to manually remove it from the command if it happens to you.
+
 
 | **`Documentation`** |
 |-----------------|
